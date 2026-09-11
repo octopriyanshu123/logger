@@ -186,3 +186,17 @@ target_include_directories(test_logger
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
+
+# other Project cmakelists.txt
+
+# set(LOGGER_SOURCE_DIR
+#     "${CMAKE_CURRENT_SOURCE_DIR}/../../utils/logger"
+# )
+# if(NOT EXISTS "${LOGGER_SOURCE_DIR}/CMakeLists.txt")
+#   message(FATAL_ERROR "Logger source not found at '${LOGGER_SOURCE_DIR}'")
+# endif()    
+# add_subdirectory("${LOGGER_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/logger")
+
+# message(STATUS "========================================")
+# message(STATUS "[Logger] Logger source dir  : ${LOGGER_SOURCE_DIR}")
+# message(STATUS "========================================")
