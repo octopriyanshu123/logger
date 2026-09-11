@@ -102,25 +102,50 @@ static std::string resolveLogPath(const std::string &filename, const std::string
 
 // configuration method: set minimum log level and optionally a file to write to
 // logDir: optional custom directory for the log file. Empty = default ($HOME/log)
-void Logger::configure(LogLevel minLevel, const std::string &filename, bool Detail, const std::string &logDir)
+void Logger::configure(
+    LogLevel minLevel,
+    const std::string &filename,
+    bool Detail,
+    const std::string &logDir,
+    bool consoleEnabled)
 {
     std::lock_guard<std::mutex> guard(mutex_);
+
     minLevel_ = minLevel;
     detail_ = Detail;
-    // std::cout << "[Logger] Detail to: " << detail_ << "\n";
+    consoleEnabled_ = consoleEnabled;
 
     if (!filename.empty())
     {
-        filePath_ = resolveLogPath(filename, logDir); // ← resolve using default or user-supplied dir
+        filePath_ = resolveLogPath(filename, logDir);
 
         fileStream_.open(filePath_, std::ios::app);
+
         if (!fileStream_.is_open())
-            std::cerr << "[Logger] WARNING: could not open log file: " << filePath_ << "\n";
-            // std::cout << "[Logger] Logging to: " << filePath_ << "\n";
+        {
+            std::cerr << "[Logger] WARNING: could not open log file: "
+                      << filePath_ << "\n";
+        }
     }
 }
 
+// void Logger::configure(LogLevel minLevel, const std::string &filename, bool Detail, const std::string &logDir)
+// {
+//     std::lock_guard<std::mutex> guard(mutex_);
+//     minLevel_ = minLevel;
+//     detail_ = Detail;
+//     // std::cout << "[Logger] Detail to: " << detail_ << "\n";
 
+//     if (!filename.empty())
+//     {
+//         filePath_ = resolveLogPath(filename, logDir); // ← resolve using default or user-supplied dir
+
+//         fileStream_.open(filePath_, std::ios::app);
+//         if (!fileStream_.is_open())
+//             std::cerr << "[Logger] WARNING: could not open log file: " << filePath_ << "\n";
+//             // std::cout << "[Logger] Logging to: " << filePath_ << "\n";
+//     }
+// }
 
 // // helpers add the /home/<username>/log/ prefix to the filename and create the directory if needed
 // static std::string resolveLogPath(const std::string &filename)
@@ -248,11 +273,12 @@ void Logger::log(LogLevel level, const std::string &component, const std::string
                     << message
                     << "\n";
     }
-
-    // Colored console output
-    std::cout << levelToColor(level)
-              << line_stream.str()
-              << RESET_COLOR;
+    if (consoleEnabled_)
+    {
+        std::cout << levelToColor(level)
+                  << line_stream.str()
+                  << RESET_COLOR;
+    }
 
     // File output remains plain text
     if (fileStream_.is_open())

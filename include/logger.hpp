@@ -24,7 +24,13 @@ public:
     Logger(Logger &&) = delete;
     Logger &operator=(Logger &&) = delete;
 
-    void configure(LogLevel minLevel, const std::string &filePath = "", bool Detail = false, const std::string &logDir = "");
+    void configure(
+        LogLevel minLevel,
+        const std::string &filename,
+        bool Detail,
+        const std::string &logDir = "",
+        bool consoleEnabled = true);
+    // void configure(LogLevel minLevel, const std::string &filePath = "", bool Detail = false, const std::string &logDir = "");
     // void configure(LogLevel minLevel, const std::string &filePath = "" , bool Detail = false    );
 
     void debug(const std::string &component, const std::string &message,
@@ -38,8 +44,7 @@ public:
 
     void error(const std::string &component, const std::string &message,
                const char *file, int line, const char *func);
-               const char *levelToColor(LogLevel level);
-
+    const char *levelToColor(LogLevel level);
 
 private:
     void log(LogLevel level, const std::string &component, const std::string &message,
@@ -56,6 +61,7 @@ private:
     std::ofstream fileStream_;
     bool detail_{false};
     std::mutex mutex_;
+    bool consoleEnabled_{true};
 };
 
 // Must be macros (not functions) so __FILE__ / __LINE__ / __func__
